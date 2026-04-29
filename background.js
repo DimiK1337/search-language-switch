@@ -1,4 +1,4 @@
-console.log("SLS background loaded");
+//console.log("SLS background loaded");
 
 const DEFAULT_SETTINGS = {
   enabled: true,
@@ -14,7 +14,7 @@ let SETTINGS = { ...DEFAULT_SETTINGS };
 // Load settings once
 browser.storage.local.get(DEFAULT_SETTINGS).then((stored) => {
   SETTINGS = { ...DEFAULT_SETTINGS, ...stored };
-  console.log("Settings loaded:", SETTINGS);
+  //console.log("Settings loaded:", SETTINGS);
 });
 
 // Update settings live if changed
@@ -23,7 +23,7 @@ browser.storage.onChanged.addListener((changes, area) => {
     for (const key in changes) {
       SETTINGS[key] = changes[key].newValue;
     }
-    console.log("Settings updated:", SETTINGS);
+    //console.log("Settings updated:", SETTINGS);
   }
 });
 
@@ -34,6 +34,23 @@ const isGoogleHost = (hostname) => {
          hostname.startsWith("www.google.");
 };
 
+const isSearchEngineHost = (hostname, engine) => {
+  const escapedEngine = engine.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(
+    `^([a-z0-9-]+\\.)*${escapedEngine}\\.[a-z.]+$`,
+    "i"
+  );
+
+  return pattern.test(hostname);
+};
+
+const isSupportedSearchHost = (hostname) => {
+  return (
+    isSearchEngineHost(hostname, "google") ||
+    isSearchEngineHost(hostname, "bing")
+  );
+};
+
 const setParam = (url, key, value) => {
   if (value) url.searchParams.set(key, value);
 };
@@ -41,6 +58,7 @@ const setParam = (url, key, value) => {
 const buildRedirectUrl = (rawUrl) => {
   const url = new URL(rawUrl);
 
+  // TODO: Add future hosts (Bing, DuckDuckGo, etc.)
   if (!isGoogleHost(url.hostname)) return null;
 
   setParam(url, "hl", SETTINGS.uiLanguage);
@@ -57,17 +75,12 @@ const buildRedirectUrl = (rawUrl) => {
   return nextUrl === rawUrl ? null : nextUrl;
 };
 
-const GOOGLE_URLS_OG = [
-  "*://www.google.*/*",
-  "*://google.*/*"
-];
-
-const GOOGLE_URLS = ["<all_urls>"];
+const REQUEST_URLS = ["<all_urls>"];
 
 // 🔥 NON-ASYNC LISTENER
 browser.webRequest.onBeforeRequest.addListener(
   (details) => {
-    console.log("Request seen:", details.url, details.type, details.incognito);
+    //console.log("Request seen:", details.url, details.type, details.incognito);
 
     if (details.type !== "main_frame") return {};
 
@@ -76,10 +89,10 @@ browser.webRequest.onBeforeRequest.addListener(
     const redirectUrl = buildRedirectUrl(details.url);
     if (!redirectUrl) return {};
 
-    console.log("Redirecting →", redirectUrl);
+    //console.log("Redirecting →", redirectUrl);
     return { redirectUrl };
   },
-  { urls: GOOGLE_URLS },
+  { urls: REQUEST_URLS },
   ["blocking"]
 );
 
@@ -105,10 +118,10 @@ browser.webRequest.onBeforeSendHeaders.addListener(
 
     return { requestHeaders: headers };
   },
-  { urls: GOOGLE_URLS },
+  { urls: REQUEST_URLS },
   ["blocking", "requestHeaders"]
 );
 
-console.log("SLS listeners registered");
-console.log("webRequest exists:", Boolean(browser.webRequest));
-console.log("onBeforeRequest exists:", Boolean(browser.webRequest?.onBeforeRequest));
+//console.log("SLS listeners registered");
+//console.log("webRequest exists:", Boolean(browser.webRequest));
+//console.log("onBeforeRequest exists:", Boolean(browser.webRequest?.onBeforeRequest));
