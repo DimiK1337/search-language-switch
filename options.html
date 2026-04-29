@@ -1,0 +1,71 @@
+<!-- options.html -->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Force Google English</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+
+<body>
+  <main class="app">
+    <header class="header">
+      <h1>Force Google English</h1>
+      <p>Keep Google Search in English, including private browsing when enabled.</p>
+    </header>
+
+    <section class="card">
+      <label class="toggle-row">
+        <span>
+          <strong>Enable extension</strong>
+          <small>Redirect Google Search pages to English.</small>
+        </span>
+        <input id="enabled" type="checkbox" />
+      </label>
+
+      <label class="toggle-row">
+        <span>
+          <strong>Force request language</strong>
+          <small>Helps stop Google from reverting to German.</small>
+        </span>
+        <input id="forceHeader" type="checkbox" />
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Language settings</h2>
+
+      <label class="field">
+        <span>Google UI language</span>
+        <input id="uiLanguage" type="text" autocomplete="off" />
+      </label>
+
+      <label class="field">
+        <span>Region hint</span>
+        <input id="region" type="text" autocomplete="off" />
+      </label>
+
+      <label class="field">
+        <span>Result language</span>
+        <input id="resultLanguage" type="text" autocomplete="off" />
+      </label>
+
+      <label class="field">
+        <span>Accept-Language header</span>
+        <input id="acceptLanguage" type="text" autocomplete="off" />
+      </label>
+    </section>
+
+    <footer class="footer">
+      <button id="save" type="button">Save settings</button>
+      <p id="status" aria-live="polite"></p>
+    </footer>
+  </main>
+
+  <script src="options.js"></script>
+</body>
+
+</html>
