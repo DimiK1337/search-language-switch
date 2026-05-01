@@ -16,7 +16,11 @@
         },
         {
           "version": "0.1.6",
-          "update_link": "https://github.com/DimiK1337/search-language-switch/releases/download/v0.1.6/12fc5eb9ed5f450b8dff-0.1.6.xpi"
+          "update_link": "https://github.com/DimiK1337/search-language-switch/releases/download/v0.1.6/12fc5eb9ed5f450b8dff-0.1.6.xpi?raw=1"
+        },
+        {
+          "version": "0.1.7",
+          "update_link": "https://github.com/DimiK1337/search-language-switch/releases/download/v0.1.7/12fc5eb9ed5f450b8dff-0.1.7.xpi?raw=1"
         }
       ]
     }
