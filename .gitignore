@@ -4,3 +4,4 @@ dist/
 *.zip
 .amo-upload-uuid
 manifest_copy.json
+manifest.json
