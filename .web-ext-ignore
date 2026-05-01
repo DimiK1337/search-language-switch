@@ -1,0 +1,11 @@
+.git
+.gitignore
+dist
+scripts
+*.zip
+*.xpi
+README.md
+PRIVACY.md
+manifest_copy.json
+.amo-upload-uuid
+updates.json
