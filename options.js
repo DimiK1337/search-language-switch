@@ -57,4 +57,15 @@ const saveSettings = async () => {
 
 $("save").addEventListener("click", saveSettings);
 
+const showVersion = () => {
+  const manifest = browser.runtime.getManifest();
+  const versionElement = $("extensionVersion");
+
+  if (versionElement) {
+    versionElement.textContent = manifest.version;
+  }
+};
+
+
 loadSettings();
+showVersion();

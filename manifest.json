@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Search Language Switch",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Forces Google Search UI and results language to English.",
   "permissions": [
     "storage",
@@ -20,9 +20,15 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "search-language-switch@example.com",
-      "strict_min_version": "68.0"
-    }
+      "id": "search-language-switch@dimik1337.dev",
+      "update_url": "https://dimik1337.github.io/search-language-switch/updates.json",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    },
+    "gecko_android": {}
   },
   "icons": {
     "16": "./assets/logo/logo-16x16.png",

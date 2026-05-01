@@ -36,6 +36,12 @@ body {
   line-height: 1.4;
 }
 
+.version {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: color-mix(in srgb, CanvasText 60%, transparent);
+}
+
 .card {
   border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
   border-radius: 16px;

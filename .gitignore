@@ -1,0 +1,5 @@
+.amo-upload-uuid
+dist/
+*.xpi
+*.zip
+manifest_copy.json
