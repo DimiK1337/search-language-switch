@@ -27,13 +27,16 @@ manifest.version = newVersion;
 fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
 NODE
 
+echo "Building clean extension folder..."
+"$SCRIPT_DIR/build.sh"
+
 echo "Signing extension with web-ext..."
 
 rm -rf "$ROOT_DIR/dist"
 mkdir -p "$ROOT_DIR/dist"
 
 web-ext sign \
-  --source-dir "$ROOT_DIR" \
+  --source-dir "$ROOT_DIR/build" \
   --artifacts-dir "$ROOT_DIR/dist" \
   --channel=unlisted \
   --api-key "$AMO_JWT_ISSUER" \
