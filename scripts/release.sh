@@ -60,7 +60,7 @@ gh release create "$TAG" "$XPI_PATH" \
   --title "$TAG" \
   --notes "Release $NEW_VERSION"
 
-UPDATE_LINK="https://github.com/$GITHUB_REPO/releases/download/$TAG/$(basename $XPI_PATH)"
+UPDATE_LINK="https://github.com/$GITHUB_REPO/releases/download/$TAG/$(basename $XPI_PATH)?raw=1"
 
 echo "Updating updates.json..."
 
