@@ -122,6 +122,12 @@ browser.webRequest.onBeforeSendHeaders.addListener(
   ["blocking", "requestHeaders"]
 );
 
+
+// Open the options page from the toolbar
+browser.browserAction.onClicked.addListener(() => {
+  browser.runtime.openOptionsPage();
+});
+
 //console.log("SLS listeners registered");
 //console.log("webRequest exists:", Boolean(browser.webRequest));
 //console.log("onBeforeRequest exists:", Boolean(browser.webRequest?.onBeforeRequest));

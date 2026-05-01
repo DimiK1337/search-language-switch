@@ -30,6 +30,13 @@
     },
     "gecko_android": {}
   },
+  "browser_action": {
+    "default_title": "Search Language Switch",
+    "default_icon": {
+      "16": "./assets/logo/logo-16x16.png",
+      "32": "./assets/logo/logo-32x32.png"
+    }
+  },
   "icons": {
     "16": "./assets/logo/logo-16x16.png",
     "32": "./assets/logo/logo-32x32.png",
