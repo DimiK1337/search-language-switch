@@ -1,78 +1,130 @@
 # Search Language Switch
 
-A lightweight Firefox extension that forces Google Search to display in English — especially useful in regions where Google defaults to another language (e.g., Switzerland).
+A lightweight Firefox extension that forces Google Search to display in English — especially useful in regions where Google aggressively localizes results (e.g. Switzerland).
+
+---
 
 ## ✨ Features
 
 - Forces Google UI language to English (`hl=en`)
 - Restricts search results to English (`lr=lang_en`)
-- Optional header override (`Accept-Language`)
-- Works in Private Browsing (recommended use case)
-- Minimal permissions (Google domains only)
+- Optional `Accept-Language` header override
+- Works in Private Browsing
+- Auto-update support via GitHub releases
+- Minimal, transparent permissions
+
+---
 
 ## 🎯 Use Case
 
-Designed for users who:
+Built for people who:
 
-- Frequently perform quick searches in private tabs
+- Use Private Browsing frequently
 - Want consistent English results regardless of location
-- Are affected by Google’s aggressive localization (e.g. `google.ch → German`)
+- Are tired of `google.ch → German/French` switching constantly
+
+---
 
 ## ⚙️ How It Works
 
-The extension intercepts Google navigation requests and:
+The extension intercepts top-level Google navigation requests and:
 
-1. Modifies query parameters:
+### 1. Modifies query parameters
 
-   - `hl=en` → UI language
-   - `gl=ch` → region hint
-   - `lr=lang_en` → result language restriction
-2. Optionally overrides the request header:
+- `hl=en` → UI language
+- `gl=ch` → region hint
+- `lr=lang_en` → restrict results to English
 
-   - `Accept-Language: en-US,en;q=0.9`
+### 2. Optionally overrides headers
 
-## 📱 Installation (Android)
+Accept-Language: en-US,en;q=0.9
 
-1. Zip the extension folder
-2. Upload to AMO (addons.mozilla.org) for signing (unlisted)
-3. Install the signed `.xpi` file on Firefox Android
-4. Enable:
-   - **Run in Private Browsing**
+---
+
+## 📦 Installation
+
+### Desktop (Firefox)
+
+Install from a signed `.xpi`:
+
+- Open the `.xpi` file
+- Confirm installation
+
+### Android (Firefox Nightly / Developer Edition)
+
+1. Install Firefox Nightly
+2. Open the signed `.xpi`
+3. Enable:
+   - Run in Private Browsing
+
+---
+
+## 🔄 Auto Updates
+
+This extension supports automatic updates via:
+
+https://raw.githubusercontent.com/DimiK1337/search-language-switch/main/updates.json
+
+Updates are delivered via GitHub Releases.
+
+---
 
 ## 🧪 Development
 
 Load temporarily in Firefox:
+
 about:debugging#/runtime/this-firefox
 
-Click:
-→ Load Temporary Add-on → select `manifest.json`
+Then:
+Load Temporary Add-on → select manifest.json
+
+---
 
 ## 🔒 Permissions
 
-- `webRequest`, `webRequestBlocking` → modify Google requests
-- `storage` → save user settings
-- `*://www.google.*/*` → limited scope to Google only
+- storage
+- webRequest
+- webRequestBlocking
+- <all_urls>
 
-No analytics, no external network requests.
+Filtering is done internally to only affect Google domains.
 
-## ⚠️ Notes
+---
 
-- Google may still apply localization via IP or account settings
-- This extension forces behavior but does not guarantee full consistency
+## ⚠️ Limitations
+
+- Google may still localize based on IP or account settings
+- This extension enforces parameters but cannot fully override backend behavior
+
+---
 
 ## 🚧 TODO
 
-- [ ] Normalize all domains to `google.com` (avoid TLD-based localization)
-- [ ] Add support for DuckDuckGo, Bing, Startpage
-- [ ] MV3 compatibility layer (Chrome support)
-- [ ] Add icon + branding
-- [ ] Add toggle: "Private mode only"
-- [ ] Improve language selector (future: multi-language support)
+- Normalize all searches to google.com
+- Add support for DuckDuckGo, Bing, Startpage
+- MV3 compatibility (Chrome support)
+- UI improvements
+- Private mode only toggle
+- Multi-language support
 
-## 🧠 Future Vision
+---
 
-Expand into a "Search Language Controller":
+## 🔐 Privacy
 
-- Force any language (not just English)
-- Per-engine rules
-- Per-tab or per-mode behavior
+- No analytics
+- No tracking
+- No external requests
+- All logic runs locally
+
+---
+
+## 🛠 Release Pipeline
+
+Automated via:
+
+- web-ext sign
+- GitHub Releases
+- updates.json
+
+Run:
+./scripts/release.sh
