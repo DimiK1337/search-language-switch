@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Search Language Switch",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Forces Google Search UI and results language to English.",
   "permissions": [
     "storage",
