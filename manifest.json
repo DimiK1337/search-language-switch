@@ -21,7 +21,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "search-language-switch@dimik1337.dev",
-      "update_url": "https://dimik1337.github.io/search-language-switch/updates.json",
+      "update_url": "https://raw.githubusercontent.com/DimiK1337/search-language-switch/main/updates.json",
       "data_collection_permissions": {
         "required": [
           "none"
