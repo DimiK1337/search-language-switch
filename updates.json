@@ -1,7 +1,12 @@
 {
   "addons": {
     "search-language-switch@dimik1337.dev": {
-      "updates": []
+      "updates": [
+        {
+          "version": "0.1.2",
+          "update_link": "https://github.com/DimiK1337/search-language-switch/releases/download/v0.1.2/12fc5eb9ed5f450b8dff-0.1.2.xpi"
+        }
+      ]
     }
   }
 }
