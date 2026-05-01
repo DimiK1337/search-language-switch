@@ -28,7 +28,7 @@ fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
 NODE
 
 echo "Building clean extension folder..."
-"$SCRIPT_DIR/build.sh"
+"$SCRIPT_DIR/build.sh" unlisted
 
 echo "Signing extension with web-ext..."
 
