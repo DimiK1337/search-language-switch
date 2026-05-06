@@ -1,72 +1,91 @@
-<!-- options.html -->
-
 <!doctype html>
-<html lang="en">
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Search Language Switch</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Search Language Switch</title>
-  <link rel="stylesheet" href="options.css" />
-</head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <h1>Search Language Switch</h1>
+        <p>
+          Keep Google Search in your preferred language, including private
+          browsing when enabled.
+        </p>
+        <p class="version">Version <span id="extensionVersion"></span></p>
+      </header>
 
-<body>
-  <main class="app">
-    <header class="header">
-      <h1>Search Language Switch</h1>
-      <p>Keep Google Search in English, including private browsing when enabled.</p>
-      <p class="version">Version <span id="extensionVersion">...</span></p>
-    </header>
+      <section class="card">
+        <label class="setting-row" for="enabled">
+          <span>
+            <strong>Enable extension</strong>
+            <small>Redirect Google Search pages to your selected language.</small>
+          </span>
+          <input id="enabled" type="checkbox" checked />
+        </label>
 
-    <section class="card">
-      <label class="toggle-row">
-        <span>
-          <strong>Enable extension</strong>
-          <small>Redirect Google Search pages to English.</small>
-        </span>
-        <input id="enabled" type="checkbox" />
-      </label>
+        <label class="setting-row" for="forceHeader">
+          <span>
+            <strong>Force request language</strong>
+            <small>Also rewrite the Accept-Language request header.</small>
+          </span>
+          <input id="forceHeader" type="checkbox" checked />
+        </label>
+      </section>
 
-      <label class="toggle-row">
-        <span>
-          <strong>Force request language</strong>
-          <small>Helps stop Google from reverting to German.</small>
-        </span>
-        <input id="forceHeader" type="checkbox" />
-      </label>
-    </section>
+      <section class="card">
+        <h2>Search settings</h2>
 
-    <section class="card">
-      <h2>Language settings</h2>
+        <div class="field-grid">
+          <label class="field" for="languagePreset">
+            <span>Search language</span>
+            <select id="languagePreset"></select>
+          </label>
 
-      <label class="field">
-        <span>Google UI language</span>
-        <input id="uiLanguage" type="text" autocomplete="off" />
-      </label>
+          <label class="field" for="regionPreset">
+            <span>Search region</span>
+            <select id="regionPreset"></select>
+          </label>
+        </div>
+      </section>
 
-      <label class="field">
-        <span>Region hint</span>
-        <input id="region" type="text" autocomplete="off" />
-      </label>
+      <section class="card">
+        <h2>Generated Google settings</h2>
 
-      <label class="field">
-        <span>Result language</span>
-        <input id="resultLanguage" type="text" autocomplete="off" />
-      </label>
+        <dl class="generated-settings">
+          <div>
+            <dt>Google UI language</dt>
+            <dd id="previewUiLanguage"></dd>
+          </div>
 
-      <label class="field">
-        <span>Accept-Language header</span>
-        <input id="acceptLanguage" type="text" autocomplete="off" />
-      </label>
-    </section>
+          <div>
+            <dt>Region hint</dt>
+            <dd id="previewRegion"></dd>
+          </div>
 
-    <footer class="footer">
-      <button id="save" type="button">Save settings</button>
-      <p id="status" aria-live="polite"></p>
-    </footer>
-  </main>
+          <div>
+            <dt>Result language</dt>
+            <dd id="previewResultLanguage"></dd>
+          </div>
 
-  <script src="options.js"></script>
-</body>
+          <div>
+            <dt>Accept-Language header</dt>
+            <dd id="previewAcceptLanguage"></dd>
+          </div>
+        </dl>
+      </section>
 
+      <footer class="actions">
+        <button id="save" type="button">Save settings</button>
+        <span id="status" role="status"></span>
+      </footer>
+    </main>
+
+    <script src="data/languages.js"></script>
+    <script src="data/regions.js"></script>
+    <script src="settings.js"></script>
+    <script src="options.js"></script>
+  </body>
 </html>

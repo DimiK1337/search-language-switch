@@ -34,10 +34,12 @@ FILES=(
   "options.html"
   "options.css"
   "options.js"
+  "settings.js"
 )
 
 DIRS=(
   "assets"
+  "data"
 )
 
 rm -rf "$BUILD_DIR"
