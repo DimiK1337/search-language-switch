@@ -2,7 +2,18 @@
 
 :root {
   color-scheme: light dark;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --accent: #7c3aed;
+  --border: color-mix(in srgb, CanvasText 18%, transparent);
+  --border-soft: color-mix(in srgb, CanvasText 12%, transparent);
+  --text-muted: color-mix(in srgb, CanvasText 68%, transparent);
+  --surface: color-mix(in srgb, Canvas 94%, CanvasText 6%);
 }
 
 * {
@@ -15,47 +26,49 @@ body {
   color: CanvasText;
 }
 
-.app {
-  width: min(100%, 720px);
+.page {
+  width: min(100% - 32px, 760px);
   margin: 0 auto;
-  padding: 16px;
+  padding: 28px 0 36px;
 }
 
 .header {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .header h1 {
   margin: 0 0 6px;
-  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-size: clamp(1.7rem, 5vw, 2.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
 .header p {
   margin: 0;
-  color: color-mix(in srgb, CanvasText 70%, transparent);
-  line-height: 1.4;
+  color: var(--text-muted);
+  line-height: 1.45;
 }
 
 .version {
-  margin-top: 8px;
+  margin-top: 6px !important;
   font-size: 0.9rem;
-  color: color-mix(in srgb, CanvasText 60%, transparent);
 }
 
 .card {
-  border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
-  border-radius: 16px;
-  padding: 14px;
   margin-bottom: 14px;
-  background: color-mix(in srgb, Canvas 94%, CanvasText 6%);
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
 }
 
 .card h2 {
-  margin: 0 0 12px;
-  font-size: 1.05rem;
+  margin: 0 0 14px;
+  font-size: 1rem;
+  line-height: 1.2;
 }
 
-.toggle-row {
+.setting-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -63,17 +76,31 @@ body {
   padding: 12px 0;
 }
 
-.toggle-row + .toggle-row {
-  border-top: 1px solid color-mix(in srgb, CanvasText 14%, transparent);
+.setting-row:first-child {
+  padding-top: 0;
 }
 
-.toggle-row span {
+.setting-row:last-child {
+  padding-bottom: 0;
+}
+
+.setting-row + .setting-row {
+  border-top: 1px solid var(--border-soft);
+}
+
+.setting-row span {
   display: grid;
   gap: 4px;
 }
 
+.setting-row strong,
+.field span,
+.generated-settings dt {
+  font-weight: 700;
+}
+
 small {
-  color: color-mix(in srgb, CanvasText 65%, transparent);
+  color: var(--text-muted);
   line-height: 1.35;
 }
 
@@ -81,72 +108,127 @@ input[type="checkbox"] {
   width: 24px;
   height: 24px;
   flex: 0 0 auto;
+  accent-color: var(--accent);
+}
+
+.field-grid {
+  display: grid;
+  gap: 14px;
 }
 
 .field {
   display: grid;
   gap: 6px;
-  margin-bottom: 14px;
 }
 
-.field span {
-  font-weight: 650;
-}
-
-input[type="text"] {
+select {
   width: 100%;
-  min-height: 44px;
-  padding: 10px 12px;
+  min-height: 42px;
+  padding: 8px 10px;
   border: 1px solid color-mix(in srgb, CanvasText 22%, transparent);
-  border-radius: 12px;
+  border-radius: 10px;
   font: inherit;
   background: Canvas;
   color: CanvasText;
 }
 
-.footer {
-  position: sticky;
-  bottom: 0;
-  padding: 12px 0;
-  background: Canvas;
+.generated-settings {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 0;
+}
+
+.generated-settings div {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.generated-settings div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.generated-settings dd {
+  margin: 0;
+  color: var(--text-muted);
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    monospace;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 4px;
 }
 
 button {
-  width: 100%;
-  min-height: 48px;
+  min-height: 46px;
+  min-width: 170px;
+  padding: 0 20px;
   border: 0;
   border-radius: 14px;
   font: inherit;
   font-weight: 700;
-  background: #7c3aed;
+  background: var(--accent);
   color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.08);
+}
+
+button:active {
+  transform: translateY(1px);
 }
 
 #status {
   min-height: 1.4em;
-  margin: 10px 0 0;
-  text-align: center;
-  color: color-mix(in srgb, CanvasText 70%, transparent);
+  color: var(--text-muted);
 }
 
-@media (min-width: 560px) {
-  .app {
-    padding: 24px;
+@media (min-width: 640px) {
+  .field-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .generated-settings {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .generated-settings div:nth-last-child(-n + 2) {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .page {
+    width: min(100% - 24px, 760px);
+    padding-top: 20px;
+  }
+
+  .setting-row {
+    align-items: flex-start;
+  }
+
+  .actions {
+    display: grid;
   }
 
   button {
-    width: auto;
-    min-width: 180px;
-  }
-
-  .footer {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  #status {
-    margin: 0;
-    text-align: left;
+    width: 100%;
   }
 }

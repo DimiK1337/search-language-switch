@@ -11,6 +11,9 @@
   ],
   "background": {
     "scripts": [
+      "data/languages.js",
+      "data/regions.js",
+      "settings.js",
       "background.js"
     ]
   },
