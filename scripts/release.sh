@@ -5,72 +5,234 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 
 EXT_NAME="search-language-switch"
-MANIFEST="$ROOT_DIR/manifest.json"
+MANIFEST="$ROOT_DIR/manifest.base.json"
 UPDATES_JSON="$ROOT_DIR/updates.json"
+BUILD_DIR="$ROOT_DIR/build"
+DIST_DIR="$ROOT_DIR/dist"
 
-CURRENT_VERSION="$(node -p "require('$MANIFEST').version")"
+GITHUB_REPO="DimiK1337/search-language-switch"
+ADDON_ID="search-language-switch@dimik1337.dev"
 
-echo "Current version: $CURRENT_VERSION"
-read -rp "New version: " NEW_VERSION
+select_release_mode() {
+  if [[ $# -gt 0 ]]; then
+    echo "$1"
+    return
+  fi
 
-if [[ -z "$NEW_VERSION" ]]; then
-  echo "No version provided."
-  exit 1
-fi
+  local mode=""
+  local choice=""
 
-# Update manifest version
-node - "$MANIFEST" "$NEW_VERSION" <<'NODE'
+  while [[ "$mode" != "unlisted" && "$mode" != "listed" ]]; do
+    echo "Select release mode:" >&2
+    echo "  1) unlisted  - sign .xpi, create GitHub release, update updates.json" >&2
+    echo "  2) listed    - create .zip for public AMO upload" >&2
+    read -rp "Enter 1 or 2: " choice
+
+    case "$choice" in
+      1) mode="unlisted" ;;
+      2) mode="listed" ;;
+      *) echo "Invalid choice. Please enter 1 or 2."; echo >&2 ;;
+    esac
+  done
+
+  echo "$mode"
+}
+
+validate_release_mode() {
+  local mode="$1"
+
+  if [[ "$mode" != "listed" && "$mode" != "unlisted" ]]; then
+    echo "Usage: $0 [listed|unlisted]"
+    exit 1
+  fi
+}
+
+read_new_version() {
+  local current_version
+  local new_version
+
+  current_version="$(node -p "require('$MANIFEST').version")"
+
+  echo "Current version: $current_version" >&2
+  read -rp "New version: " new_version
+
+  if [[ -z "$new_version" ]]; then
+    echo "No version provided." >&2
+    exit 1
+  fi
+
+  if [[ ! "$new_version" =~ ^[0-9]+(\.[0-9]+){1,2}$ ]]; then
+    echo "Invalid version: $new_version" >&2
+    echo "Version should look like 0.2.0 or 1.0.0" >&2
+    exit 1
+  fi
+
+  echo "$new_version"
+}
+
+confirm_release() {
+  local mode="$1"
+  local version="$2"
+  local confirm=""
+
+  read -rp "Release $mode version $version? [y/N] " confirm
+
+  case "$confirm" in
+    y|Y|yes|YES) ;;
+    *)
+      echo "Release cancelled."
+      exit 1
+      ;;
+  esac
+}
+
+update_manifest_version() {
+  local version="$1"
+
+  echo "Updating manifest version..."
+
+  node - "$MANIFEST" "$version" <<'NODE'
 const fs = require("fs");
+
 const [manifestPath, newVersion] = process.argv.slice(2);
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
 manifest.version = newVersion;
+
 fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
 NODE
+}
 
-echo "Building clean extension folder..."
-"$SCRIPT_DIR/build.sh" unlisted
+build_extension() {
+  local mode="$1"
 
-echo "Signing extension with web-ext..."
+  echo "Building clean $mode extension folder..."
+  "$SCRIPT_DIR/build.sh" "$mode"
+}
 
-rm -rf "$ROOT_DIR/dist"
-mkdir -p "$ROOT_DIR/dist"
+reset_dist_dir() {
+  rm -rf "$DIST_DIR"
+  mkdir -p "$DIST_DIR"
+}
 
-web-ext sign \
-  --source-dir "$ROOT_DIR/build" \
-  --artifacts-dir "$ROOT_DIR/dist" \
-  --channel=unlisted \
-  --api-key "$AMO_JWT_ISSUER" \
-  --api-secret "$AMO_JWT_SECRET"
+verify_listed_build() {
+  echo "Verifying listed build does not contain update_url..."
 
-XPI_PATH="$(ls $ROOT_DIR/dist/*.xpi | tail -n 1)"
+  if grep -R "update_url" "$BUILD_DIR/manifest.json" >/dev/null; then
+    echo "ERROR: listed build contains update_url."
+    echo "Do not upload this zip to AMO."
+    exit 1
+  fi
 
-TAG="v$NEW_VERSION"
-GITHUB_REPO="DimiK1337/search-language-switch"
+  echo "OK: no update_url found."
+}
 
-echo "Creating git commit + tag..."
-git add "$MANIFEST"
-git commit -m "Release $NEW_VERSION"
-git tag "$TAG"
-git push
-git push origin "$TAG"
+create_listed_zip() {
+  local version="$1"
+  local zip_path="$DIST_DIR/$EXT_NAME-listed-$version.zip"
 
-echo "Creating GitHub release..."
-gh release create "$TAG" "$XPI_PATH" \
-  --repo "$GITHUB_REPO" \
-  --title "$TAG" \
-  --notes "Release $NEW_VERSION"
+  echo "Creating listed AMO zip..." >&2
 
-UPDATE_LINK="https://github.com/$GITHUB_REPO/releases/download/$TAG/$(basename $XPI_PATH)?raw=1"
+  (
+    cd "$BUILD_DIR"
+    zip -r "$zip_path" .
+  ) >&2
 
-echo "Updating updates.json..."
+  echo "$zip_path"
+}
 
-node - "$UPDATES_JSON" "$NEW_VERSION" "$UPDATE_LINK" <<'NODE'
+commit_manifest_release() {
+  local version="$1"
+
+  echo "Creating git commit for release..."
+  git add "$MANIFEST"
+  git commit -m "Release $version"
+  git push
+}
+
+print_listed_next_steps() {
+  local zip_path="$1"
+
+  echo ""
+  echo "Done 🚀"
+  echo ""
+  echo "Listed AMO package created:"
+  echo "$zip_path"
+  echo ""
+  echo "Next steps:"
+  echo "1. Go to AMO Developer Hub"
+  echo "2. Open Search Language Switch"
+  echo "3. Click Upload New Version"
+  echo "4. Choose: On this site"
+  echo "5. Upload this file:"
+  echo "   $zip_path"
+  echo ""
+  echo "Suggested AMO release notes:"
+  echo "Added multilingual support."
+  echo ""
+  echo "Users can now choose their preferred Google Search language and region from the options page. The extension automatically generates the appropriate Google Search parameters and Accept-Language header."
+  echo ""
+  echo "Also improved the options page layout and mobile responsiveness."
+  echo ""
+}
+
+sign_unlisted_extension() {
+  echo "Signing unlisted extension with web-ext..."
+
+  web-ext sign \
+    --source-dir "$BUILD_DIR" \
+    --artifacts-dir "$DIST_DIR" \
+    --channel=unlisted \
+    --api-key "$AMO_JWT_ISSUER" \
+    --api-secret "$AMO_JWT_SECRET"
+}
+
+get_latest_xpi_path() {
+  ls "$DIST_DIR"/*.xpi | tail -n 1
+}
+
+create_git_tag_and_push() {
+  local version="$1"
+  local tag="v$version"
+
+  echo "Creating git commit + tag..."
+  git add "$MANIFEST"
+  git commit -m "Release $version"
+  git tag "$tag"
+  git push
+  git push origin "$tag"
+}
+
+create_github_release() {
+  local version="$1"
+  local xpi_path="$2"
+  local tag="v$version"
+
+  echo "Creating GitHub release..."
+
+  gh release create "$tag" "$xpi_path" \
+    --repo "$GITHUB_REPO" \
+    --title "$tag" \
+    --notes "Release $version"
+}
+
+update_updates_json() {
+  local version="$1"
+  local xpi_path="$2"
+  local tag="v$version"
+  local update_link
+
+  update_link="https://github.com/$GITHUB_REPO/releases/download/$tag/$(basename "$xpi_path")?raw=1"
+
+  echo "Updating updates.json..."
+
+  node - "$UPDATES_JSON" "$version" "$update_link" "$ADDON_ID" <<'NODE'
 const fs = require("fs");
-const [path, version, link] = process.argv.slice(2);
 
-const addonId = "search-language-switch@dimik1337.dev";
+const [path, version, link, addonId] = process.argv.slice(2);
 
 let data = { addons: {} };
+
 if (fs.existsSync(path)) {
   data = JSON.parse(fs.readFileSync(path, "utf8"));
 }
@@ -80,7 +242,13 @@ data.addons[addonId] ??= { updates: [] };
 
 const updates = data.addons[addonId].updates;
 
-updates.push({ version, update_link: link });
+const existingUpdate = updates.find((update) => update.version === version);
+
+if (existingUpdate) {
+  existingUpdate.update_link = link;
+} else {
+  updates.push({ version, update_link: link });
+}
 
 updates.sort((a, b) =>
   a.version.localeCompare(b.version, undefined, { numeric: true })
@@ -89,10 +257,72 @@ updates.sort((a, b) =>
 fs.writeFileSync(path, JSON.stringify(data, null, 2) + "\n");
 NODE
 
-git add "$UPDATES_JSON"
-git commit -m "Update update manifest for $NEW_VERSION"
-git push
+  git add "$UPDATES_JSON"
+  git commit -m "Update update manifest for $version"
+  git push
+}
 
-echo ""
-echo "Done 🚀"
-echo "Release: https://github.com/$GITHUB_REPO/releases/tag/$TAG"
+print_unlisted_done() {
+  local version="$1"
+  local tag="v$version"
+
+  echo ""
+  echo "Done 🚀"
+  echo "Release: https://github.com/$GITHUB_REPO/releases/tag/$tag"
+}
+
+release_listed() {
+  local version="$1"
+  local zip_path
+
+  update_manifest_version "$version"
+  build_extension "listed"
+  reset_dist_dir
+  verify_listed_build
+
+  zip_path="$(create_listed_zip "$version")"
+
+  commit_manifest_release "$version"
+  print_listed_next_steps "$zip_path"
+}
+
+release_unlisted() {
+  local version="$1"
+  local xpi_path
+
+  update_manifest_version "$version"
+  build_extension "unlisted"
+  reset_dist_dir
+
+  sign_unlisted_extension
+  xpi_path="$(get_latest_xpi_path)"
+
+  create_git_tag_and_push "$version"
+  create_github_release "$version" "$xpi_path"
+  update_updates_json "$version" "$xpi_path"
+  print_unlisted_done "$version"
+}
+
+main() {
+  local mode
+  local version
+
+  mode="$(select_release_mode "$@")"
+  validate_release_mode "$mode"
+
+  echo "Release mode: $mode"
+
+  version="$(read_new_version)"
+  confirm_release "$mode" "$version"
+
+  case "$mode" in
+    listed)
+      release_listed "$version"
+      ;;
+    unlisted)
+      release_unlisted "$version"
+      ;;
+  esac
+}
+
+main "$@"
